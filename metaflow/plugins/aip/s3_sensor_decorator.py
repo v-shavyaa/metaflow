@@ -65,6 +65,16 @@ Example usage:
     )
     class S3SensorFlow(FlowSpec):    
         ...
+        
+    If you want to use a specific AWS role to access the S3 location, use s3_role_arn 
+    followed by the role ARN.
+    Note: s3_role_arn=None by default.
+    @s3_sensor(
+        path=join("$METAFLOW_DATASTORE_SYSROOT_S3", "/path/to/file"),
+        s3_role_arn="arn:partition:service:region:account:resource"
+    )
+    class S3SensorFlow(FlowSpec):    
+        ...    
 """
 
 
@@ -76,6 +86,7 @@ class S3SensorDecorator(FlowDecorator):
         "polling_interval_seconds": 300,
         "path_formatter": None,
         "os_expandvars": False,
+        "s3_role_arn": None,
     }
 
     def flow_init(
@@ -86,6 +97,7 @@ class S3SensorDecorator(FlowDecorator):
         self.polling_interval_seconds = self.attributes["polling_interval_seconds"]
         self.path_formatter = self.attributes["path_formatter"]
         self.os_expandvars = self.attributes["os_expandvars"]
+        self.s3_role_arn = self.attributes["s3_role_arn"]
 
         if not self.path:
             raise MetaflowException("You must specify a S3 path within @s3_sensor.")

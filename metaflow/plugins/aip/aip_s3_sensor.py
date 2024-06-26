@@ -69,6 +69,7 @@ def wait_for_s3_path(
     path_formatter_code_encoded: str,
     flow_parameters_json: str,
     os_expandvars: bool,
+    s3_role_arn: str,
 ) -> str:
     flow_parameters: Dict[str, str] = {
         param["name"]: param["value"] for param in json.loads(flow_parameters_json)
@@ -102,7 +103,7 @@ def wait_for_s3_path(
     key: str
     bucket, key = parsed_path.netloc, parsed_path.path.lstrip("/")
     s3: botocore.client.BaseClient
-    s3, _ = get_s3_client()
+    s3, _ = get_s3_client(s3_role_arn=s3_role_arn)
 
     previous_elapsed_time: float = read_elapsed_time_s3_path(s3, flow_name, run_id)
 
@@ -141,6 +142,7 @@ def wait_for_s3_path(
 @click.option("--path_formatter_code_encoded")
 @click.option("--flow_parameters_json")
 @click.option("--os_expandvars/--no_os_expandvars", default=False)
+@click.option("--s3_role_arn", default=None)
 def wait_for_s3_path_cli(
     path: str,
     flow_name: str,
@@ -150,6 +152,7 @@ def wait_for_s3_path_cli(
     path_formatter_code_encoded: str,
     flow_parameters_json: str,
     os_expandvars: bool,
+    s3_role_arn: str,
 ) -> str:
     return wait_for_s3_path(
         path,
@@ -160,6 +163,7 @@ def wait_for_s3_path_cli(
         path_formatter_code_encoded,
         flow_parameters_json,
         os_expandvars,
+        s3_role_arn
     )
 
 
